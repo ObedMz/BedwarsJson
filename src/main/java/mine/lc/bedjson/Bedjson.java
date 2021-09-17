@@ -1,5 +1,6 @@
 package mine.lc.bedjson;
 
+import mine.lc.bedjson.commands.CMD_Join;
 import mine.lc.bedjson.controllers.ConfigController;
 import mine.lc.bedjson.controllers.JSONServer;
 import mine.lc.bedjson.controllers.Status;
@@ -38,7 +39,7 @@ public final class Bedjson extends JavaPlugin {
         instance = this;
         ConfigController config = new ConfigController();
         config.registerConfig();
-
+        getCommand("join").setExecutor(new CMD_Join());
         setStart_port(config.getConfig().getInt("json.start_port"));
         setIp(config.getConfig().getString("json.ip"));
         setPrefix(config.getConfig().getString("json.prefix"));
@@ -198,5 +199,14 @@ public final class Bedjson extends JavaPlugin {
      */
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    /**
+     * Get a HashMap list where the Key is the mode and Values are a list of JsonServer
+     * @see JSONServer
+     * @return HashMap
+     */
+    public HashMap<String, List<JSONServer>> getServers(){
+        return servers;
     }
 }
