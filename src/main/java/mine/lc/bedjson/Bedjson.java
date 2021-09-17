@@ -14,7 +14,7 @@ import java.text.ParseException;
 import java.util.*;
 
 /**
- * <H2>BedwarsJson Plugin</H2>
+ * <H1>BedwarsJson Plugin</H1>
  * BedwarsJson it's a java plugin that get information using the motd info of a server
  * to search for the best server options to teleport the player for a game sorting by
  * modes 4vs4,3vs3,2vs2,1vs1
@@ -46,7 +46,7 @@ public final class Bedjson extends JavaPlugin {
 
         for(int x=0;x< Bedjson.getInstance().getAmount();x++)
             new JSONServer(Bedjson.getInstance().getPrefix() + x);
-        
+
         servers.put("4VS4", new ArrayList<>());
         servers.put("3VS3", new ArrayList<>());
         servers.put("2VS2", new ArrayList<>());
