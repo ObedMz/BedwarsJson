@@ -1,0 +1,6 @@
+json:
+  prefix: "bw"
+  amount: 5
+  ip: 127.0.0.1
+  start_port: 30130
+  timeout: 1000

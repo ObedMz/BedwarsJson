@@ -1,0 +1,4 @@
+name: JsonBedwars
+version: ${project.version}
+main: mine.lc.bedjson.Bedjson
+api-version: 1.17
