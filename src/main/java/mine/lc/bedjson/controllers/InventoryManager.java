@@ -43,8 +43,6 @@ public class InventoryManager {
         /*
          * loader for maps
          */
-
-
         List<JSONServer> list = new ArrayList<>(JSONServer.getAllServers());
         list.removeIf(sv-> !sv.getMode().equals(mode));
 
@@ -72,27 +70,48 @@ public class InventoryManager {
                     cfmap.getString("material"), lore).getItemStack();
             fill.add(item);
         }
+        /*
+         * Method to refill an inventory with the list of servers inside a specific slot.
+         * start = the start slot where the first server is going to be set
+         * max = the max row of the inventory after make a line break (+1) because the slots start in 0
+         * line = stored value that incremented when the for has a new row
+         * getSum() = this method return the sum of the digits of a number
+         *
+         */
         int start = config.getInt("inventory.maps.map_list.start");
-        int max =  config.getInt("inventory.maps.map_list.max_row");
-
-        for(int x = 0; x<fill.size();x++){
+        int max =  config.getInt("inventory.maps.map_list.max_row")+1;
+        int line = 0;
+        for(int x = 0; x<fill.size() && x<inv.getSize();x++){
             ItemStack in = fill.get(x);
-            int salt = x+start;
-            inv.setItem(salt, in);
-
-            int sum = 0;
-            while (salt > 0) {
-                sum = sum + salt % 10;
-                salt = salt / 10;
-            }
-
-            if(sum == max)
-                x = x+2;
+            int slot = x+start;
+            if(getSum(slot) == max)
+                line = line+2;
+            inv.setItem(slot + line, in);
 
         }
         p.openInventory(inv);
 
     }
+
+    /**
+     * This method return the sum of digits of a number
+     * @param a number to sum
+     * @return the sum digits of a
+     */
+    private static int getSum(int a){
+        int sum = 0;
+        while (a > 0) {
+            sum = sum + a % 10;
+            a = a / 10;
+        }
+        return sum;
+    }
+
+    /**
+     * Method to return in-game servers
+     * @param jsonServers List of servers
+     * @return Servers in game
+     */
     private static int getInGame(List<JSONServer> jsonServers) {
         int x =0;
         for(JSONServer sv : jsonServers)
@@ -100,6 +119,12 @@ public class InventoryManager {
                 x = x+1;
         return x;
     }
+
+    /**
+     * Method to return available servers to play
+     * @param jsonServers List of servers
+     * @return Servers allowed
+     */
     private static int getAllowed(List<JSONServer> jsonServers) {
         int x =0;
         for(JSONServer sv : jsonServers)
