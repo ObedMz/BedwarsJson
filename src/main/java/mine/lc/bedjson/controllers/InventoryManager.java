@@ -43,8 +43,7 @@ public class InventoryManager {
         /*
          * loader for maps
          */
-        int start = config.getInt("inventory.maps.map_list.start");
-        int max =  config.getInt("inventory.maps.map_list.max_row");
+
 
         List<JSONServer> list = new ArrayList<>(JSONServer.getAllServers());
         list.removeIf(sv-> !sv.getMode().equals(mode));
@@ -73,6 +72,8 @@ public class InventoryManager {
                     cfmap.getString("material"), lore).getItemStack();
             fill.add(item);
         }
+        int start = config.getInt("inventory.maps.map_list.start");
+        int max =  config.getInt("inventory.maps.map_list.max_row");
 
         for(int x = 0; x<fill.size();x++){
             ItemStack in = fill.get(x);
