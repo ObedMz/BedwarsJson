@@ -5,6 +5,7 @@ import mine.lc.bedjson.controllers.ConfigController;
 import mine.lc.bedjson.controllers.JSONServer;
 import mine.lc.bedjson.controllers.Status;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,12 +33,13 @@ public final class Bedjson extends JavaPlugin {
     private String ip;
     private String prefix;
     private int amount;
+    private ConfigController config;
     private final HashMap<String, List<JSONServer>> servers = new HashMap<>();
 
     @Override
     public void onEnable() {
         instance = this;
-        ConfigController config = new ConfigController();
+        config = new ConfigController();
         config.registerConfig();
         getCommand("join").setExecutor(new CMD_Join());
         setStart_port(config.getConfig().getInt("json.start_port"));
@@ -201,6 +203,9 @@ public final class Bedjson extends JavaPlugin {
         this.amount = amount;
     }
 
+    public FileConfiguration getConfigController(){
+        return config.getConfig();
+    }
     /**
      * Get a HashMap list where the Key is the mode and Values are a list of JsonServer
      * @see JSONServer

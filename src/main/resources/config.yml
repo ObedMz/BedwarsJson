@@ -4,3 +4,58 @@ json:
   ip: 127.0.0.1
   start_port: 30130
   timeout: 1000
+inventory:
+  games:
+    title: "&7Selector de partidas Modo: %mode%"
+    items:
+      1:
+        material: 355:0
+        slot: 20
+        name: "&aJugar Ahora"
+        lore:
+          - "&7Click para ir"
+          - "&7a una partida."
+        action: "TELEPORT"
+      2:
+        material: 358:0
+        slot: 24
+        name: "&6Selector de Mapas"
+        lore:
+          - "&7Click para ver la lista"
+          - "&7de mapas disponibles."
+        action: "MAPS"
+      3:
+        material: 166:0
+        slot: 53
+        name: "&cCerrar Menú"
+        lore:
+          - "&7Click para cerrar"
+          - "&7el menu."
+        action: "CLOSE"
+      4:
+        material: 347:0
+        slot: 45
+        name: "&3Volver a la partida"
+        lore:
+          - "&cProximamente."
+        action: "NONE"
+  maps:
+    title: "&8Lista de Mapas Modo: %mode%"
+    items:
+      1:
+        material: 166:0
+        slot: 53
+        name: "&cCerrar Menú"
+        lore:
+          - "&7Click para cerrar"
+          - "&7el menu."
+    map_list:
+      start: 10
+      max_row: 7
+      material: 402:0
+      name: "&7Mapa: &a%map%"
+      lore:
+        - "&7Disponibles: &a%amount_allowed%"
+        - "&7Jugando: &a%amount_ingame%"
+        - "  "
+        - "&6Click para Jugar!"
