@@ -2,13 +2,13 @@ package mine.lc.bedjson.controllers;
 
 import com.google.gson.Gson;
 import mine.lc.bedjson.Bedjson;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.io.*;
 import java.net.Socket;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * <h1>JSONServer</h1>
@@ -31,6 +31,56 @@ public class JSONServer {
     private String bungee_name;
     private Status status;
     private static final HashMap<String, JSONServer> server_list = new HashMap<>();
+    private static final HashMap<String, List<JSONServer>> servers = new HashMap<>();
+
+
+    /**
+     * Load and register modes and servers.
+     */
+    public static void startup(){
+        for(int x=0;x< Bedjson.getInstance().getAmount();x++)
+            new JSONServer(Bedjson.getInstance().getPrefix() + x);
+
+        servers.put("4VS4", new ArrayList<>());
+        servers.put("3VS3", new ArrayList<>());
+        servers.put("2VS2", new ArrayList<>());
+        servers.put("1VS1", new ArrayList<>());
+        updateServers();
+    }
+
+    /**
+     * Runnable to update 20L (One second) the information
+     * of each server in the List
+     * @see JSONServer
+     */
+    private static void updateServers() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Bedjson.getInstance(), ()->{
+            servers.values().forEach(List::clear);
+            for(JSONServer sv : JSONServer.getAllServers()) {
+                try {
+                    sv.ping();
+
+                    if(!sv.isOnline())
+                        continue;
+                    if(sv.getStatus() != Status.WAITING)
+                        continue;
+                    if(sv.getOnline_players() >= sv.getMax_players())
+                        continue;
+
+                    if(servers.containsKey(sv.getMode().toUpperCase(Locale.ROOT)))
+                        servers.get(sv.getMode().toUpperCase(Locale.ROOT)).add(sv);
+
+                } catch (IOException | ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            //Short the List<JsonServer> by the online players. (Check if its revers)
+            servers.values().forEach(json-> json.sort(Comparator.comparing(JSONServer::getOnline_players)));
+
+        },20L,20L);
+
+
+    }
 
     /**
      * method to get or create a new JSONServer object
@@ -57,11 +107,91 @@ public class JSONServer {
     }
 
     /**
+     * Get a HashMap list where the Key is the mode and Values are a list of JsonServer
+     * @see JSONServer
+     * @return HashMap
+     */
+    public static HashMap<String, List<JSONServer>> getServersMode(){
+        return servers;
+    }
+    /**
      * Get a collection of all JsonServer objects from a HashMap
      * @return Collection<JSONServer>
      */
     public static Collection<JSONServer> getAllServers() {
         return server_list.values();
+    }
+
+    public static Collection<JSONServer> getServersByMode(String mode){
+        List<JSONServer> list = new ArrayList<>(JSONServer.getAllServers());
+        list.removeIf(sv-> !sv.getMode().equals(mode));
+        return list;
+    }
+    /**
+     * Method to return in-game servers
+     * @param jsonServers List of servers
+     * @return Servers in game
+     */
+    public static int getInGame(List<JSONServer> jsonServers) {
+        int x =0;
+        for(JSONServer sv : jsonServers)
+            if(sv.getStatus() == Status.PLAYING)
+                x = x+1;
+        return x;
+    }
+
+    /**
+     * Method to return available servers to play
+     * @param jsonServers List of servers
+     * @return Servers allowed
+     */
+    public static int getAllowed(List<JSONServer> jsonServers) {
+        int x =0;
+        for(JSONServer sv : jsonServers)
+            if(sv.getStatus() == Status.WAITING)
+                x = x+1;
+        return x;
+    }
+
+    /**
+     * This method is used to send the player to another server
+     * around the proxy using the BungeeCord channel.
+     *
+     * @param player The target Player to send to the server.
+     */
+    public void sendPlayerToServer(Player player) {
+        try {
+            ByteArrayOutputStream b = new ByteArrayOutputStream();
+            DataOutputStream out = new DataOutputStream(b);
+            out.writeUTF("Connect");
+            out.writeUTF(bungee_name);
+            player.sendPluginMessage(Bedjson.getInstance(), "BungeeCord", b.toByteArray());
+            b.close();
+            out.close();
+        } catch (Exception var5) {
+            var5.printStackTrace();
+        }
+
+    }
+    /**
+     * Method to return the best server shorting by the mode.
+     * @param mode The Mode name
+     * @return JSONServer
+     */
+    public static JSONServer getBestServerByMode(String mode){
+        return  servers.get(mode).stream().findFirst().orElse(null);
+    }
+    /**
+     * Method to return the best server shorting by the mode and map name.
+     * @param mode The Mode name
+     * @param map The Map name
+     * @return JSONServer
+     */
+    public static JSONServer getBestServerByMapMode(String mode, String map){
+        for(JSONServer sv : servers.get(mode))
+            if(sv.getMap().equalsIgnoreCase(map))
+                return sv;
+        return null;
     }
 
     /**

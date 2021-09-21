@@ -43,11 +43,8 @@ public class InventoryManager {
         /*
          * loader for maps
          */
-        List<JSONServer> list = new ArrayList<>(JSONServer.getAllServers());
-        list.removeIf(sv-> !sv.getMode().equals(mode));
-
         HashMap<String, List<JSONServer>> maps = new HashMap<>();
-        for(JSONServer sv : list){
+        for(JSONServer sv : JSONServer.getServersByMode(mode)){
             if(maps.containsKey(sv.getMap())){
                 maps.get(sv.getMap()).add(sv);
                 continue;
@@ -59,8 +56,8 @@ public class InventoryManager {
         List<ItemStack> fill = new ArrayList<>();
         for(String key : maps.keySet()){
             List<String> lore = new ArrayList<>();
-            int allow = getAllowed(maps.get(key));
-            int game = getInGame(maps.get(key));
+            int allow = JSONServer.getAllowed(maps.get(key));
+            int game = JSONServer.getInGame(maps.get(key));
             cfmap.getStringList("lore").forEach(str->{
                 str = str.replaceAll("%amount_allowed%", allow +"");
                 str = str.replaceAll("%amount_ingame%", game + "");
@@ -105,31 +102,5 @@ public class InventoryManager {
             a = a / 10;
         }
         return sum;
-    }
-
-    /**
-     * Method to return in-game servers
-     * @param jsonServers List of servers
-     * @return Servers in game
-     */
-    private static int getInGame(List<JSONServer> jsonServers) {
-        int x =0;
-        for(JSONServer sv : jsonServers)
-            if(sv.getStatus() == Status.PLAYING)
-                x = x+1;
-        return x;
-    }
-
-    /**
-     * Method to return available servers to play
-     * @param jsonServers List of servers
-     * @return Servers allowed
-     */
-    private static int getAllowed(List<JSONServer> jsonServers) {
-        int x =0;
-        for(JSONServer sv : jsonServers)
-            if(sv.getStatus() == Status.WAITING)
-                x = x+1;
-        return x;
     }
 }

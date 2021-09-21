@@ -1,6 +1,5 @@
 package mine.lc.bedjson.commands;
 
-import mine.lc.bedjson.Bedjson;
 import mine.lc.bedjson.controllers.JSONServer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -21,16 +20,16 @@ public class CMD_Join implements CommandExecutor {
             return false;
         }
         String mode = args[0];
-        if(!Bedjson.getInstance().getServers().containsKey(mode)){
+        if(!JSONServer.getServersMode().containsKey(mode)){
             sender.sendMessage(ChatColor.RED + "No existe ese modo de juego.");
             return false;
         }
-        JSONServer server = Bedjson.getInstance().getBestServer(mode);
+        JSONServer server = JSONServer.getBestServerByMode(mode);
         if(server == null){
             sender.sendMessage(ChatColor.RED + "No hay partidas disponibles, intentalo denuevo.");
             return false;
         }
-        Bedjson.getInstance().sendPlayerToServer((Player) sender, server.getBungee_name());
+        server.sendPlayerToServer((Player) sender);
         return false;
     }
 }
