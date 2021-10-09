@@ -32,7 +32,7 @@ public class JSONServer {
     private Status status;
     private static final HashMap<String, JSONServer> server_list = new HashMap<>();
     private static final HashMap<String, List<JSONServer>> servers = new HashMap<>();
-
+    private static JSONServer random_server;
 
     /**
      * Load and register modes and servers.
@@ -71,12 +71,15 @@ public class JSONServer {
                         servers.get(sv.getMode().toUpperCase(Locale.ROOT)).add(sv);
 
                 } catch (IOException | ParseException e) {
-                    e.printStackTrace();
+                   Bukkit.getLogger().info("No se pudo obtener información del servidor " + sv.getBungee_name());
                 }
             }
             //Short the List<JsonServer> by the online players. (Check if its revers)
             servers.values().forEach(json-> json.sort(Comparator.comparing(JSONServer::getOnline_players)));
-
+            List<JSONServer> best_all = new ArrayList<>();
+            servers.values().forEach(best_all::addAll);
+            best_all.sort(Comparator.comparing(JSONServer::getOnline_players));
+            random_server = best_all.get(0);
         },20L,20L);
 
 
@@ -151,6 +154,10 @@ public class JSONServer {
             if(sv.getStatus() == Status.WAITING)
                 x = x+1;
         return x;
+    }
+
+    public static JSONServer getRandom_server() {
+        return random_server;
     }
 
     /**
@@ -433,7 +440,7 @@ public class JSONServer {
             inputStreamReader.close();
             inputStream.close();
         }catch (Exception e){
-            e.printStackTrace();
+           Bukkit.getLogger().info("Cant get motd of" + bungee_name);
         }
     }
 

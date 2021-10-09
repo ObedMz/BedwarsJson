@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class PlayerListener implements Listener {
@@ -45,6 +46,16 @@ public class PlayerListener implements Listener {
 
     }
 
+    @EventHandler
+    public void PlayerJoinPortal(PlayerPortalEvent e){
+        JSONServer js = JSONServer.getRandom_server();
+        if(js == null){
+            e.getPlayer().sendMessage(ChatColor.RED + "No hay servidores disponibles.");
+            return;
+        }
+        js.sendPlayerToServer(e.getPlayer());
+
+    }
 
     @EventHandler
     public void ClickInventoryMode(InventoryClickEvent event){

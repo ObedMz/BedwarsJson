@@ -3,6 +3,8 @@ package mine.lc.bedjson;
 import mine.lc.bedjson.commands.CMD_Join;
 import mine.lc.bedjson.controllers.ConfigController;
 import mine.lc.bedjson.controllers.JSONServer;
+import mine.lc.bedjson.events.PlayerListener;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -37,6 +39,7 @@ public final class Bedjson extends JavaPlugin {
         setPrefix(config.getConfig().getString("json.prefix"));
         setAmount(config.getConfig().getInt("json.amount"));
         JSONServer.startup();
+        Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
 
     }
 
